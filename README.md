@@ -1,3 +1,6 @@
+# Video demo
+[Link](https://drive.google.com/file/d/1MY1SUpzWZVYhP6e4Y8scnn1eJpeQskh4/view?usp=sharing)
+
 # 1. Yêu cầu
 * Labtop đã cài sẵn docker, docker-compose
 * Cài đặt [rancher k3d](https://github.com/rancher/k3d)
