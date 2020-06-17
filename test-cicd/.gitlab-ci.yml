@@ -1,0 +1,30 @@
+stages:
+  - release
+  - deploy
+
+services:
+  - docker:18.09-dind
+
+variables:
+  IMAGE_LATEST: ${DOCKER_USER}/${APP_NAME}:latest
+  KUBECONFIG: /etc/deploy/kubeconfig.yaml
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+release:
+  stage: release
+  image: docker:18.09-dind
+  script:
+    - docker login -u ${DOCKER_USER} -p ${CI_BUILD_TOKEN}
+    - docker build -t ${APP_NAME} .
+    - docker tag ${APP_NAME} ${IMAGE_LATEST}
+    - docker push ${IMAGE_LATEST}
+
+deploy_staging:
+  stage: deploy
+  image: dtzar/helm-kubectl
+  before_script:
+    - mkdir -p /etc/deploy
+    - echo $KUBE_CONFIG | base64 -d > $KUBECONFIG
+  script:
+    - helm upgrade --install ${APP_NAME} deployment/

@@ -1,0 +1,32 @@
+version: '3.5'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    hostname: "192.168.1.102"
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+    ports:
+      - "80:80"
+      - "22:22"
+    volumes:
+      - ./config/gitlab:/etc/gitlab
+      - ./data/gitlab:/var/opt/gitlab
+      - ./logs:/var/log/gitlab
+    networks:
+      - gitlab
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - ./config/gitlab-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitlab
+
+networks:
+  gitlab:
